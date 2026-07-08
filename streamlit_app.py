@@ -1,43 +1,27 @@
 import streamlit as st
 import google.generativeai as genai
 
-# Konfigurasi Halaman
 st.set_page_config(page_title="Affiliate Script AI", page_icon="🚀")
 st.title("🚀 AI Affiliate Content Generator")
 
-# Sidebar untuk API Key
 api_key = st.sidebar.text_input("Masukkan Gemini API Key:", type="password")
-
 deskripsi = st.text_area("Paste Deskripsi Produk dari Marketplace:")
 
 if st.button("Generate Script"):
     if not api_key:
-        st.error("Silakan masukkan API Key di sidebar!")
+        st.error("Masukkan API Key di sidebar!")
     elif not deskripsi:
-        st.warning("Masukkan deskripsi produk dulu!")
+        st.warning("Masukkan deskripsi produk!")
     else:
         try:
             genai.configure(api_key=api_key)
-            # Menggunakan model terbaru yang stabil
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            # Kita coba gunakan model yang pasti ada di semua akun
+            model = genai.GenerativeModel('gemini-1.5-flash-latest')
             
-            prompt = f"""
-            Anda adalah ahli affiliate marketing. Berdasarkan deskripsi produk berikut:
-            '{deskripsi}'
-            
-            Buatkan script video promosi untuk TikTok/Shopee Video.
-            Format wajib:
-            1. Hook (pembuka yang bikin penasaran).
-            2. Isi (keunggulan produk yang relevan).
-            3. Call to Action (ajakan beli yang kuat).
-            
-            Gunakan gaya bahasa santai dan menjual.
-            """
+            prompt = f"Buatkan script video promosi untuk: {deskripsi}. Format: Hook, Isi, CTA. Gaya: Santai & Menjual."
             
             response = model.generate_content(prompt)
             st.subheader("Hasil Script:")
             st.write(response.text)
         except Exception as e:
-            # Menampilkan pesan error yang lebih detail
-            st.error(f"Terjadi kesalahan: {e}")
-            st.info("Tips: Pastikan API Key Anda valid dan memiliki akses ke model gemini-1.5-flash di Google AI Studio.")
+            st.error(f"Error: {e}")
