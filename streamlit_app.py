@@ -5,59 +5,47 @@ st.set_page_config(page_title="Affiliate Content Machine", page_icon="⚡")
 st.title("⚡ Affiliate Content Machine")
 
 api_key = st.sidebar.text_input("Masukkan Gemini API Key:", type="password")
-
 deskripsi = st.text_area("Paste deskripsi/foto produk:")
 mode = st.radio("Mode:", ["Generate VO", "Generate Caption & Hashtag"])
 
-# Menyimpan hasil VO agar bisa digunakan untuk Caption
-if 'last_vo' not in st.session_state:
-    st.session_state.last_vo = ""
+if 'last_vo' not in st.session_state: st.session_state.last_vo = ""
 
 if st.button("Proses"):
-    if not api_key:
-        st.error("Masukkan API Key di sidebar!")
-    elif not deskripsi and mode == "Generate VO":
-        st.warning("Masukkan deskripsi produk!")
+    if not api_key: st.error("Masukkan API Key!")
     else:
         try:
             genai.configure(api_key=api_key)
-            models = [m for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-            model = genai.GenerativeModel(models[0].name)
+            # Hardcoded model untuk mempercepat respon
+            model = genai.GenerativeModel('gemini-1.5-flash')
             
             if mode == "Generate VO":
                 prompt = f"""
-                Bertindaklah sebagai affiliator Shopee/TikTok berpengalaman.
-                Aturan VO: 
-                - Gunakan bahasa natural, santai, talking head, durasi 25-40 detik.
-                - Hook harus langsung menunjukkan produk (no basa-basi).
-                - Hindari keterangan adegan/B-roll.
-                - CTA kuat & memancing tindakan.
-                - Tidak ada emoji.
-                - Fokus pada manfaat, bukan spesifikasi.
-                - Format: VO 1, "Teks VO", dst.
-                
+                Bertindaklah sebagai affiliator Shopee dan TikTok Shop.
                 Produk: {deskripsi}
+                
+                Ikuti aturan ketat:
+                1. Bahasa natural, santai, talking head, 25-40 detik (70-120 kata).
+                2. Hook langsung bahas produk (jangan: "Pernah nggak...", "Siapa yang...").
+                3. TANPA keterangan adegan/B-roll. TANPA emoji.
+                4. Struktur: Hook -> Problem -> Solusi -> Benefit -> CTA kuat.
+                5. CTA harus memancing tindakan (bukan cuma "klik keranjang").
+                6. Hasil harus siap baca, langsung tulis VO 1, "Teks VO", dst.
                 """
                 response = model.generate_content(prompt)
                 st.session_state.last_vo = response.text
-                st.subheader("Hasil VO:")
                 st.write(response.text)
             
             else:
                 prompt = f"""
-                Buatkan Caption dan Hashtag berdasarkan VO ini:
-                {st.session_state.last_vo}
-                
-                Format WAJIB:
+                Buatkan caption dan hashtag berdasarkan VO ini: {st.session_state.last_vo}
+                Ikuti format: 
                 🎥 VO X
-                TikTok: [1 kalimat natural, keyword produk] + #hashtags
-                Shopee: [2-4 kata] + #hashtags (SEO Shopee)
+                TikTok: [Caption 1 kalimat natural + 5 hashtag relevan]
+                Shopee: [Caption 2-4 kata + 8-10 hashtag SEO]
                 
-                Tanpa penjelasan tambahan, langsung hasil.
+                Langsung hasil saja, tanpa basa-basi atau penjelasan.
                 """
                 response = model.generate_content(prompt)
-                st.subheader("Hasil Caption:")
                 st.write(response.text)
-                
         except Exception as e:
             st.error(f"Error: {e}")
