@@ -1,7 +1,7 @@
 import streamlit as st
 import google.generativeai as genai
 
-# Tampilan Judul
+# Konfigurasi Halaman
 st.set_page_config(page_title="Affiliate Script AI", page_icon="🚀")
 st.title("🚀 AI Affiliate Content Generator")
 
@@ -18,7 +18,8 @@ if st.button("Generate Script"):
     else:
         try:
             genai.configure(api_key=api_key)
-            model = model = genai.GenerativeModel('gemini-pro')
+            # Menggunakan model terbaru yang stabil
+            model = genai.GenerativeModel('gemini-1.5-flash')
             
             prompt = f"""
             Anda adalah ahli affiliate marketing. Berdasarkan deskripsi produk berikut:
@@ -26,9 +27,9 @@ if st.button("Generate Script"):
             
             Buatkan script video promosi untuk TikTok/Shopee Video.
             Format wajib:
-            1. Hook: (pembuka yang bikin penasaran).
-            2. Isi: (keunggulan produk yang relevan).
-            3. Call to Action: (ajakan beli yang kuat).
+            1. Hook (pembuka yang bikin penasaran).
+            2. Isi (keunggulan produk yang relevan).
+            3. Call to Action (ajakan beli yang kuat).
             
             Gunakan gaya bahasa santai dan menjual.
             """
@@ -37,4 +38,6 @@ if st.button("Generate Script"):
             st.subheader("Hasil Script:")
             st.write(response.text)
         except Exception as e:
+            # Menampilkan pesan error yang lebih detail
             st.error(f"Terjadi kesalahan: {e}")
+            st.info("Tips: Pastikan API Key Anda valid dan memiliki akses ke model gemini-1.5-flash di Google AI Studio.")
