@@ -18,7 +18,7 @@ if st.button("Generate Script"):
     else:
         try:
             genai.configure(api_key=api_key)
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            model = model = genai.GenerativeModel('gemini-pro')
             
             prompt = f"""
             Anda adalah ahli affiliate marketing. Berdasarkan deskripsi produk berikut:
