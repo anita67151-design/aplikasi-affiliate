@@ -4,7 +4,7 @@ import google.generativeai as genai
 st.set_page_config(page_title="Affiliate Content Machine", page_icon="⚡")
 st.title("⚡ Affiliate Content Machine")
 
-api_key = st.sidebar.text_input("Masukkan Gemini API Key:", type="password")
+api_key = st.secrets["GEMINI_API_KEY"]
 
 # Input tambahan untuk jumlah VO
 jumlah_vo = st.sidebar.slider("Jumlah VO yang ingin dibuat:", 1, 10, 3)
